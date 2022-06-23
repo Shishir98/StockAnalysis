@@ -1,49 +1,37 @@
 import pandas as pd
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-
-DATA_DIR = "StockData/JNJ.csv"
 
 
-def create_dataset(directory):
-    df = pd.read_csv(directory)
-    df = df[['Date', 'Close', 'Open', 'High', 'Low']]
-    df['Date'] = pd.to_datetime(df['Date'])
-    df['Date'].min(), df['Date'].max()
-    print(df.head())
-    return df
+class StockAnalysis:
+    def __init__(self, data_dir):
+        self.DATA_DIR = data_dir
+        self.df = pd.read_csv(self.DATA_DIR)
+        self.df = self.df[['Date', 'Close', 'Open', 'High', 'Low']]
+        self.df['Date'] = pd.to_datetime(self.df['Date'])
+        self.df['Date'].min(), self.df['Date'].max()
 
+    def basic_eda(self):
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=self.df['Date'], y=self.df['Close'], name='Close price'))
+        fig.update_layout(showlegend=True, title='JNJ 1985-2021')
+        fig.show()
 
-def basic_eda(data_frame):
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=data_frame['Date'], y=data_frame['Close'], name='Close price'))
-    fig.update_layout(showlegend=True, title='JNJ 1985-2021')
-    fig.show()
+    def candlestick_eda(self):
+        fig = go.Figure(data=[go.Candlestick(x=self.df.index,
+                                             open=self.df['Open'],
+                                             high=self.df['High'],
+                                             low=self.df['Low'],
+                                             close=self.df['Close'])])
+        fig.show()
 
+    def table_eda(self):
+        fig = go.Figure(data=[go.Table(
+            header=dict(values=list(['Date', 'Open', 'High', 'Low', 'Close']),
+                        fill_color='paleturquoise',
+                        align='left'),
+            cells=dict(values=[self.df.index, self.df.Open, self.df.High, self.df.Low, self.df.Close],
+                       fill_color='lavender',
+                       align='left'))
+        ])
 
-def candlestick_eda(data_frame):
-    fig = go.Figure(data=[go.Candlestick(x=data_frame.index,
-                                         open=data_frame['Open'],
-                                         high=data_frame['High'],
-                                         low=data_frame['Low'],
-                                         close=data_frame['Close'])])
-    fig.show()
-
-
-def table_eda(data_frame):
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=list(['Date', 'Open', 'High', 'Low', 'Close']),
-                    fill_color='paleturquoise',
-                    align='left'),
-        cells=dict(values=[data_frame.index, data_frame.Open, data_frame.High, data_frame.Low, data_frame.Close],
-                   fill_color='lavender',
-                   align='left'))
-    ])
-
-    fig.show()
-
-
-data = create_dataset(DATA_DIR)
-basic_eda(data)
-candlestick_eda(data)
-table_eda(data)
+        fig.show()
