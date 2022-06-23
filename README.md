@@ -4,4 +4,4 @@ Predicitive Modelling and Anamoly Detection using LSTM have been demostrated.
 ##EDA
 Close Price Graph (1985-2021)
 
-![This is an image](Images/Close Price.PNG)
+![Close Price Graph](Images/Close Price.PNG)
