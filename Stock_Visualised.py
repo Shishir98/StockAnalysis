@@ -5,31 +5,35 @@ import plotly.graph_objects as go
 class StockAnalysis:
     def __init__(self, data_dir):
         self.DATA_DIR = data_dir
-        self.df = pd.read_csv(self.DATA_DIR)
-        self.df = self.df[['Date', 'Close', 'Open', 'High', 'Low']]
-        self.df['Date'] = pd.to_datetime(self.df['Date'])
-        self.df['Date'].min(), self.df['Date'].max()
 
-    def basic_eda(self):
+
+    def read_csv(self):
+        df = pd.read_csv(self.DATA_DIR)
+        df = df[['Date', 'Close']]
+        df['Date'] = pd.to_datetime(df['Date'])
+        df['Date'].min(), df['Date'].max()
+        return df
+
+    def basic_eda(self,data):
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=self.df['Date'], y=self.df['Close'], name='Close price'))
+        fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name='Close price'))
         fig.update_layout(showlegend=True, title='JNJ 1985-2021')
         fig.show()
 
-    def candlestick_eda(self):
-        fig = go.Figure(data=[go.Candlestick(x=self.df.index,
-                                             open=self.df['Open'],
-                                             high=self.df['High'],
-                                             low=self.df['Low'],
-                                             close=self.df['Close'])])
+    def candlestick_eda(self, data):
+        fig = go.Figure(data=[go.Candlestick(x=data.index,
+                                             open=data['Open'],
+                                             high=data['High'],
+                                             low=data['Low'],
+                                             close=data['Close'])])
         fig.show()
 
-    def table_eda(self):
+    def table_eda(self, data):
         fig = go.Figure(data=[go.Table(
             header=dict(values=list(['Date', 'Open', 'High', 'Low', 'Close']),
                         fill_color='paleturquoise',
                         align='left'),
-            cells=dict(values=[self.df.index, self.df.Open, self.df.High, self.df.Low, self.df.Close],
+            cells=dict(values=[data.index, data.Open, data.High, data.Low, data.Close],
                        fill_color='lavender',
                        align='left'))
         ])
