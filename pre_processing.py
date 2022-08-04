@@ -7,13 +7,24 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, LSTM, Dropout, RepeatVector, TimeDistributed
 from tensorflow import keras
 
-
+TRAIN_TEST_SIZE = 0.9
+LEARNING_RATE = 0.001
+EPOCH = 100
+BATCH_SIZE = 2
+VALIDATION_SPLIT = 0.1
+LOSS = 'mae'
 class Training():
-    def __init__(self, data):
+    def __init__(self, data, train_test_size, learning_rate, epoch, batch_size, validation_split, loss):
         self.data = data
+        self.train_test_size = train_test_size
+        self.learning_rate = learning_rate
+        self.epoch = epoch
+        self.batch_size = batch_size
+        self.validation_split = validation_split
+        self.loss = loss
 
     def scaler_transforms(self):
-        train_size = int(len(self.data) * 0.9)
+        train_size = int(len(self.data) * self.train_test_size)
         test_size = len(self.data) - train_size
         train, test = self.data.iloc[0:train_size], self.data.iloc[train_size:len(self.data)]
         print(train.shape, test.shape)
@@ -41,8 +52,8 @@ class Training():
         # model.add(LSTM(128, return_sequences=True))
         # model.add(Dropout(rate=0.2))
         model.add(TimeDistributed(Dense(train_data.shape[2])))
-        opt = keras.optimizers.Adam(learning_rate=0.001)
-        model.compile(optimizer=opt, loss='mae')
+        opt = keras.optimizers.Adam(learning_rate=self.learning_rate)
+        model.compile(optimizer=opt, loss=self.loss)
         callbacks = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, mode='min')
         model.summary()
         return model, callbacks
@@ -50,14 +61,15 @@ class Training():
     def start_training(self, model, callbacks, x_train, y_train):
         history = model.fit(
             x_train, y_train,
-            epochs=100,
-            batch_size=2,
-            validation_split=0.1,
+            epochs=self.epoch,
+            batch_size=self.batch_size,
+            validation_split=self.validation_split,
             callbacks=[callbacks],
             shuffle=False
         )
+        model.save("Models/version1_test")
         plt.plot(history.history['loss'], label='Training Loss')
         plt.plot(history.history['val_loss'], label='Validation Loss')
         plt.legend();
         plt.show()
-        return history
+        return history,model

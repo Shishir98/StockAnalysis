@@ -6,7 +6,6 @@ class StockAnalysis:
     def __init__(self, data_dir):
         self.DATA_DIR = data_dir
 
-
     def read_csv(self):
         df = pd.read_csv(self.DATA_DIR)
         df = df[['Date', 'Close']]
@@ -14,7 +13,7 @@ class StockAnalysis:
         df['Date'].min(), df['Date'].max()
         return df
 
-    def basic_eda(self,data):
+    def basic_eda(self, data):
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name='Close price'))
         fig.update_layout(showlegend=True, title='JNJ 1985-2021')
