@@ -1,19 +1,11 @@
-from Stock_Visualised import StockAnalysis
-from sklearn.preprocessing import StandardScaler
-import numpy as np
 import matplotlib.pyplot as plt
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM, Dropout, RepeatVector, TimeDistributed
-from tensorflow import keras
+import numpy as np
 import pandas as pd
-
-TRAIN_TEST_SIZE = 0.9
-LEARNING_RATE = 0.001
-EPOCH = 100
-BATCH_SIZE = 2
-VALIDATION_SPLIT = 0.1
-LOSS = 'mae'
+import tensorflow as tf
+from sklearn.preprocessing import StandardScaler
+from tensorflow import keras
+from tensorflow.keras.layers import Dense, LSTM, Dropout, RepeatVector, TimeDistributed
+from tensorflow.keras.models import Sequential
 
 
 class Training():
@@ -79,7 +71,8 @@ class Training():
 
 
 class Anamoly():
-    def __init__(self, data, train_test_size, learning_rate, epoch, batch_size, validation_split, loss):
+    def __init__(self, data, train_test_size, learning_rate, epoch, batch_size, validation_split, loss,model):
+        self.model = model
         self.data = data
         self.train_test_size = train_test_size
         self.learning_rate = learning_rate
@@ -109,9 +102,9 @@ class Anamoly():
         return X_test_final, y_test_final, X_train_final, y_train_final
 
     def fit_model(self, X_train_final, y_train_final):
-        model = keras.models.load_model('Models/version1_test')
+        # model = keras.models.load_model('Models/version1_test')
         callbacks = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, mode='min')
-        history_final = model.fit(
+        history_final = self.model.fit(
             X_train_final, y_train_final,
             epochs=100,
             batch_size=2,
